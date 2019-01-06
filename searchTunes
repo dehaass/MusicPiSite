@@ -1,0 +1,123 @@
+#!/bin/bash
+# Created: March 15, 2016
+# Stuart de Haas
+#
+# Finds Tunes for me
+
+#######################################
+########### Main Function #############
+#######################################
+MUSIC_LOCATION="/home/stuart/Music/iTunes Music"
+export TUNES
+cd "${MUSIC_LOCATION}"
+
+if [ "$1" == -a ] && [ "$3" == -t ]; then
+
+    locate -l 200 -i -d /home/stuart/Music/db_file "$4" | sort -f -i | while read line ; do
+
+    # Check if this is a file or directory
+        if [ ! -f "${line}" ]; then
+            continue
+        fi
+        ARTIST="${line%/*/*}"
+        ARTIST="${ARTIST##*/}"
+    # make sure the artist matches
+        if [[ ${ARTIST,,} != *${2,,}* ]]; then
+            continue
+        fi
+        # Remove everything after the last '.'
+        TRACK="${line%.*}"
+        # Remove everything up to the last '/'
+        TRACK="${TRACK##*/}"
+        # Remove track number if present
+        TRACK="${TRACK#[0-9][0-9][ ]}"
+        # ${ ,,} converts to lower case
+    # Make sure the track matches
+        if [[ ${TRACK,,} != *${4,,}* ]]; then
+            # if the pattern is not in the track name, don't print it
+            continue
+        fi
+        if [[ ${TRACK} == '.'* ]]; then
+            continue
+        fi
+
+        # printf %q escapes all special characters
+        LINE=$(printf %q "$line")
+        echo "$LINE"
+        break
+    done 
+
+elif [ "$1" == -a ]; then
+    find -maxdepth 1 -type d -iname "*${2}*" | sort -f -i | while read line ; do
+    ARTIST="${line##*/}"
+    echo $ARTIST
+    done
+
+elif [ "$1" == -l ]; then
+    ls | sort -f -i | while read line ; do
+        echo $line
+    done
+elif [ "$1" == -s ]; then
+    locate -l 200 -i -d /home/stuart/Music/db_file "$2" | sort -f -i -d | while read line ; do
+    # Checks to see if the 'line' is a file (not directory)
+        if [ ! -f "${line}" ]; then
+            continue
+        fi
+
+        ARTIST="${line%/*/*}"
+        ARTIST="${ARTIST##*/}"
+        if [[ ${ARTIST,,} != *${2,,}* ]]; then
+            continue
+        fi
+
+        TRACK="${line%.*}"
+        TRACK="${TRACK##*/}"
+        TRACK="${TRACK#[0-9][0-9][ ]}"
+        TRACK="${TRACK#[0-9][\-][0-9][0-9][ ]}"
+        if [[ ${TRACK} == '.'* ]]; then
+            continue
+        fi
+
+
+        # printf %q escapes all special characters
+        LINE=$(printf %q "$line")
+        echo "${LINE}%${TRACK}"
+    done
+
+elif [ "$1" == -t ]; then
+    # locate '-l' number of matches, '-i' Ignore case '-d' use this database
+    # sort '-f' ignore case '-i' ignore special characters
+    locate -l 200 -i -d /home/stuart/Music/db_file "$2" | sort -f -i | while read line ; do
+
+    # Checks to see if the 'line' is a file (not directory)
+        if [ ! -f "${line}" ]; then
+            continue
+        fi
+        # Remove everything after the last '.'
+        TRACK="${line%.*}"
+        # Remove everything up to the last '/'
+        TRACK="${TRACK##*/}"
+        # Remove track number if present
+        TRACK="${TRACK#[0-9][0-9][ ]}"
+        TRACK="${TRACK#[0-9][\-][0-9][0-9][ ]}"
+        # ${ ,,} converts to lower case
+        if [[ ${TRACK,,} != *${2,,}* ]]; then
+            # if the pattern is not in the track name, don't print it
+            continue
+        fi
+        if [[ ${TRACK} == '.'* ]]; then
+            continue
+        fi
+
+        ARTIST="${line%/*/*}"
+        ARTIST="${ARTIST##*/}"
+        #printf %q escapes all special characters
+        LINE=$(printf %q "$line")
+        echo "${LINE}%${TRACK}"
+    done
+
+else
+    echo "Invalid shit"
+    TRACK="/home/stuart/Music/iTunes\ Music/Darude/Unknown\ Album/sandstorm\ \(original\ mix\).mp3"
+    echo $TRACK
+fi

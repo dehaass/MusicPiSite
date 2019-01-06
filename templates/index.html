@@ -1,0 +1,58 @@
+$def with (backgroundCol, currArtist, artistList, trackList, location, playing)
+
+<html>
+<head>
+<link href="favicon.ico" rel="shortcut icon" type="image/x-icon" />
+</head>
+<body bgcolor='$backgroundCol'><h1>Welcome to Stuart's RGB LED Site!</h1>
+
+<p>This site can be used to contol the lights in Stuart's room. Isn't that cool?</p>
+<p>Here are some options:</p>
+
+<form action="/party" method="post">
+    <input type="submit" value="PARTY">
+</form>
+
+<form action="/control" method="post">
+    <input type="submit" name="cmd" value="play">
+    <input type="submit" name="cmd" value="pause">
+    <input type="submit" name="cmd" value="next">
+    <input type="submit" name="cmd" value="previous">
+</form>
+
+<form action="/artists" method="post">
+    <input type="submit" name="search" value="Reset">
+</form>
+
+<form action="/artists" method="post">
+    <input type="text" name="search"><br>
+    <input type="submit" value="Search">
+</form>
+
+<form action="/tracks" method="post">
+    <p>Choose an Artist</p>
+    <p><select name="artist" size="20" style="width:400px">
+        $:artistList
+    </select></p>
+    <p><input type="submit" value="Choose"></p>
+</form>
+
+<p>Current Artist: $currArtist</p>
+
+<form action="/songs" method="post">
+    <input type="text" name="search"><br>
+    <input type="submit" value="Search">
+</form>
+
+<form action="/play" method="post">
+    <p>Choose a Song</p>
+    <p><select name="track" size="20" style="width:400px">
+        $:trackList
+    </select></p>
+    <p><input type="submit" value="Choose"></p>
+</form>
+
+<p>Location: $location</p>
+<p>Playing: $playing</p>
+
+</body></html>
